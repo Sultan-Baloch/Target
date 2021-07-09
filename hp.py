@@ -54,6 +54,159 @@ def ceknet():
     except KeyboardInterrupt:
     	time.sleep(3.5)
         exit('\n\033[37;1m[\x1b[92mx\033[37;1m] \033[31;1mProgram berhenti\n')
+        
+        
+        
+        
+        
+        def log_menu():
+    try:
+        t_check = open('access_token.txt', 'r')
+        menu()
+    except (KeyError, IOError):
+        os.system('clear')
+        print logo
+        print '\x1b[1;92m ~~~~ Login menu ~~~~\x1b[1;91m'
+        print 47 * '-'
+        print '\x1b[1;91m[1] Login with FaceBook'
+        print '\x1b[1;91m[2] Login with token'
+        print '\x1b[1;91m[3] Login with cookies'
+        print ''
+        log_menu_s()
+
+
+def log_menu_s():
+    s = raw_input(' \x1b[1;94m\xe2\x95\xb0\xe2\x94\x80TIMMY\xe2\x9e\xa4 ')
+    if s == '1':
+        log_fb()
+    elif s == '2':
+        log_token()
+    elif s == '3':
+        log_cookie()
+    else:
+        print ''
+        print '\\ Select valid option '
+        print ''
+        log_menu_s()
+
+
+def log_fb():
+    os.system('clear')
+    print logo
+    print '\x1b[1;31;1mLogin with id/pass'
+    print 47 * '-'
+    lid = raw_input('\x1b[1;92m Id/Email/No: ')
+    pwds = raw_input(' \x1b[1;93mPassword: ')
+    try:
+        data = requests.get('http://localhost:5000/auth?id=' + uid + '&pass=' + pwd).text
+        q = json.loads(data)
+        if 'loc' in q:
+            ts = open('access_token.txt', 'w')
+            ts.write(q['loc'])
+            ts.close()
+            menu()
+        elif 'www.facebook.com' in q['error']:
+            print ' User must verify account before login'
+            raw_input('\x1b[1;92m Press enter to try again ')
+            log_fb()
+        else:
+            print ' Id/Pass may be wrong'
+            raw_input(' \x1b[1;92mPress enter to Retry ')
+            log_fb()
+    except:
+        print ''
+        print 'Exiting tool'
+        os.system('exit')
+
+
+def log_token():
+    os.system('clear')
+    print logo
+    print '\x1b[1;92mLogin with token\x1b[1;91m'
+    print 47 * '-'
+    tok = raw_input(' \x1b[1;93mPaste token here: \x1b[1;91m')
+    print 47 * '-'
+    t_s = open('access_token.txt', 'w')
+    t_s.write(tok)
+    t_s.close()
+    menu()
+
+
+def log_cookie():
+    os.system('clear')
+    print logo
+    print ''
+    print '\x1b[1;31;1mLogin Cookies'
+    print ''
+    try:
+        cookie = raw_input(' Paste cookies here: ')
+        data = {'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Kiwi Chrome/68.0.3438.0 Safari/537.36', 'referer': 'https://m.facebook.com/', 'host': 'm.facebook.com', 
+           'origin': 'https://m.facebook.com', 
+           'upgrade-insecure-requests': '1', 
+           'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7', 
+           'cache-control': 'max-age=0', 
+           'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8', 
+           'content-type': 'text/html; charset=utf-8', 
+           'cookie': cookie}
+        c1 = requests.get('https://m.facebook.com/composer/ocelot/async_loader/?publisher=feed#_=_', headers=data)
+        c2 = re.search('(EAAA\\w+)', c1.text)
+        hasil = c2.group(1)
+        ok = open('access_token.txt', 'w')
+        ok.write(hasil)
+        ok.close()
+        menu()
+    except AttributeError:
+        print ''
+        print '\tInvalid cookies'
+        print ''
+        raw_input(' \x1b[1;92mPress enter to Retry ')
+        log_menu()
+    except UnboundLocalError:
+        print ''
+        print '\tInvalid cookies'
+        print ''
+        raw_input(' \x1b[1;92mPress enter to Retry ')
+        log_menu()
+    except requests.exceptions.SSLError:
+        print ''
+        print '\tInvalid cookies'
+        print ''
+        raw_input(' \x1b[1;92mPress enter to Retry ')
+        log_menu()
+
+
+def menu():
+    os.system('clear')
+    try:
+        token = open('access_token.txt', 'r').read()
+    except (KeyError, IOError):
+        print ''
+        print logo
+        print '\x1b[1;91;1mLogin FB id to continue'
+        time.sleep(1)
+        log_menu()
+
+    try:
+        r = requests.get('https://graph.facebook.com/me?access_token=' + token)
+        q = json.loads(r.text)
+        z = q['name']
+    except (KeyError, IOError):
+        print logo
+        print ''
+        print '\t Account Cheekpoint\x1b[0;97m'
+        print ''
+        os.system('rm -rf access_token.txt')
+        time.sleep(1)
+        log_menu()
+    except requests.exceptions.ConnectionError:
+        print logo
+        print ''
+        print '\t Turn on mobile data/wifi\x1b[0;97m'
+        print ''
+        raw_input(' \x1b[1;92mPress enter after turning on mobile data/wifi ')
+        menu()
+
+        
 
 def start():
         try:
